@@ -2,29 +2,18 @@ import numpy as np
 import cv2
 import math
 import matplotlib.pyplot as plt
-
 PI = np.pi
 
 def read_image(img_file: str) -> list:
-    """
-    img_file: path to input the image
-    mode: 1 - for color image
-          2 - for black and white 
-    """
     img = cv2.imread(img_file)
     return img
-
-    """imshow() method is for debuging, display the image"""
-    # cv2.imshow('test', img)   # show the image preview.
-    # cv2.waitKey(0)            # prompt the user to press any key, to prevent the windows from crashing
-    # cv2.destroyAllWindows()   # close the window 
 
 def cartesian_to_polar(x, y) -> tuple:
     r = math.sqrt((x**2) + (y**2))  # find distance from center to 
     if x != 0:
         theta = np.arctan((abs(y)/abs(x)))       # find theta (note that this theta can not tell which quadrant it is in)
     else:
-        theta = PI/2                # special case for x = 0 (solve can not divide by 0 error)
+        theta = PI/2               # special case for x = 0 (solve can not divide by 0 error)
     if x <= 0 and y > 0:
         theta += PI/2              # add 90 degree if point is at quadrant 2
     elif x < 0 and y <= 0:
@@ -37,7 +26,7 @@ def cartesian_to_polar(x, y) -> tuple:
 def plot_image(img: list) -> None:
     # initialize plot
     plt.axes(projection='polar')
-    point_size = 50
+    point_size = 15
 
     # plotting plots
     # calculate (x, y) cord to (r, theta) cord.
@@ -46,13 +35,16 @@ def plot_image(img: list) -> None:
 
     for y in range(max_y):     # y -> [0, 1, 2, 3 ..., max_y-1]
         for x in range(max_x): # x -> [0, 1, 2, 3 ..., max_x-1]
-            # adjust cortinate center to the image center
+            # adjust cordinate center to the image center
             x_adjusted = x- center_x
             y_adjusted = center_y - y
             r, theta = cartesian_to_polar(x_adjusted, y_adjusted)
 
-            # get pixel data
-            pixel = img[y][x]
+            # get pixel data and crop the image using col**2 + row**2 <= size**2/4 :
+            if (x <= max_x//2 and y <= max_y//2-1) or (x >= max_x//2 and y >= max_y//2):
+                pixel = img[x][y]
+            else:
+                pixel = img[y][x]
             blue, green, red = pixel[0]/255, pixel[1]/255, pixel[2]/255
             colors = [red, green, blue]
 
@@ -63,7 +55,7 @@ def plot_image(img: list) -> None:
     plt.show()
 
 def main():
-    img_file = 'favicon1.png'
+    img_file = 'images/R_small.png'
     img = read_image(img_file)
     plot_image(img)
 
