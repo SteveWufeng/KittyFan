@@ -47,6 +47,13 @@ V = [
     [0, 0, 1, 0, 0, 0],
     [0, 0, 1, 0, 0, 0]
 ]
+def colorWipe(strip, color, wait_ms=50):
+    """Wipe color across display a pixel at a time."""
+    for i in range(strip.numPixels()):
+        strip.setPixelColor(i, color)
+        strip.show()
+        time.sleep(wait_ms/1000.0)
+
 def display_row(strip, a_list, on_color, off_color):
     """input a 1D list, and display on the LED strip"""
     colored = []
