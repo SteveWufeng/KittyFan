@@ -24,9 +24,11 @@ def cartesian_to_polar(x, y) -> tuple:
     return r, theta
 
 def plot_image(img: list) -> None:
+    # this will keep track of the LEDs occupied on the strip
+    plotted = set()
     # initialize plot
     plt.axes(projection='polar')
-    point_size = 15
+    point_size = 20
 
     # plotting plots
     # calculate (x, y) cord to (r, theta) cord.
@@ -40,8 +42,25 @@ def plot_image(img: list) -> None:
             y_adjusted = center_y - y
             r, theta = cartesian_to_polar(x_adjusted, y_adjusted)
 
+            # because in an LED strip, we dont have r = 0.5 or other decimals. we only have int.
+            r = int(r) 
+            if r % 2 != 0:
+                r -=1
+            plotting = True
+            while (plotting):
+                if ((r, theta) not in plotted):
+                    plotted.add((r,theta))
+                    plotting = False
+                else:
+                    r += 2
+                    if r > 30:
+                        r = None
+                        break
+            if r == None:
+                continue
+
             # get pixel data and crop the image using col**2 + row**2 <= size**2/4 :
-            if (x <= max_x//2 and y <= max_y//2-1) or (x >= max_x//2 and y >= max_y//2):
+            if (x <= max_x//2 and y <= max_y//2-1) or (x >= max_x//2 and y > max_y//2):
                 pixel = img[x][y]
             else:
                 pixel = img[y][x]
