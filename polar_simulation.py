@@ -40,7 +40,12 @@ def plot_image(img: list) -> None:
             # adjust cordinate center to the image center
             x_adjusted = x- center_x
             y_adjusted = center_y - y
-            r, theta = cartesian_to_polar(x_adjusted, y_adjusted)
+            
+            # crop the image using col**2 + row**2 <= size**2/4:
+            if (x_adjusted**2 + y_adjusted**2 <= max_x**2/4):
+                r, theta = cartesian_to_polar(x_adjusted, y_adjusted)
+            else:
+                continue
 
             # because in an LED strip, we dont have r = 0.5 or other decimals. we only have int.
             r = int(r) 
@@ -59,7 +64,7 @@ def plot_image(img: list) -> None:
             if r == None:
                 continue
 
-            # get pixel data and crop the image using col**2 + row**2 <= size**2/4 :
+            # get pixel data
             if (x <= max_x//2 and y <= max_y//2-1) or (x >= max_x//2 and y > max_y//2):
                 pixel = img[x][y]
             else:
