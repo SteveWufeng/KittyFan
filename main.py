@@ -28,7 +28,7 @@ def custom():
     color = input('Enter R G B: ')
     color = color.split()
     r, g, b = int(color[0]), int(color[1]), int(color[2])
-    return led_index, r, g, b
+    return led_index, (r, g, b)
     
 
 # Main program logic follows:
@@ -49,7 +49,8 @@ if __name__ == '__main__':
 
     try:
         while True:
-            custom()
+            meta = custom()
+            strip.setPixelColor(meta[0], meta[1])
     except KeyboardInterrupt:
         if not args.clear:
             colorWipe(strip, Color(0,0,0), 0)
