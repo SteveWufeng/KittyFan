@@ -28,7 +28,7 @@ def custom():
     color = input('Enter R G B: ')
     color = color.split()
     r, g, b = int(color[0]), int(color[1]), int(color[2])
-    return led_index, (r, g, b)
+    return led_index, Color(r, g, b)
     
 
 # Main program logic follows:
