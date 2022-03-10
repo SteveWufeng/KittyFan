@@ -71,18 +71,7 @@ def plot_image(img: list) -> None:
         for r in range (0, 36):
             if ((r, deg) in polar_img):
                 colors = polar_img[(r, deg)]
-                plt.scatter(math.radians(deg), r, color=colors, s=point_size, cmap='hsv', alpha=0.75)
-            # if (r < 36 and ((r2, deg2) in polar_img)):
-            #     colors_ = polar_img[(r2, deg2)]
-            #     plt.scatter(math.radians(deg2), r, color=colors_, s=point_size, cmap='hsv', alpha=0.75)
-                
-    
-    # for key in polar_img:
-    #     r, theta = key[0], key[1]
-    #     colors = polar_img[(r, theta)]
-    #     plt.scatter(theta, r, color=colors, s=point_size, cmap='hsv', alpha=0.75)
-        
-    
+                plt.scatter(math.radians(deg), r, color=colors, s=point_size, cmap='hsv', alpha=0.75)    
     # show the plot
     plt.show()
         
