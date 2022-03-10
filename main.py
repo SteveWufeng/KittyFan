@@ -2,6 +2,9 @@ import time
 from rpi_ws281x import *
 import argparse
 import random
+import cv2
+import math
+import numpy
 
 # LED strip configuration:
 LED_COUNT      = 144      # Number of LED pixels.
@@ -15,23 +18,78 @@ LED_INVERT     = False   # True to invert the signal (when using NPN transistor 
 LED_CHANNEL    = 0       # set to '1' for GPIOs 13, 19, 41, 45 or 53
 
 # Define functions which animate LEDs in various ways.
-def colorWipe(strip, color, wait_ms=50):
+def color_wipe(strip, color, wait_ms=50):
     """Wipe color across display a pixel at a time."""
     for i in range(strip.numPixels()):
         strip.setPixelColor(i, color)
         strip.show()
         time.sleep(wait_ms/1000.0)
 
-def custom():
-    led_index = int(input('led index #: '))
-    r, g, b = 0, 0, 0
-    color = input('Enter R G B: ')
-    color = color.split()
-    r, g, b = int(color[0]), int(color[1]), int(color[2])
-    return led_index, Color(r, g, b)
-    
+def read_img_file(filename) -> list:
+    """read image file and return a matrix of img data"""
+    img = cv2.imread(filename)
+    return img
 
-# Main program logic follows:
+def cartesian_to_polar(x, y) -> tuple:
+    """convert cartesian cortinate to polar cordinate"""
+    r = math.sqrt((x**2) + (y**2))
+    if x != 0:
+        theta = numpy.arctan((abs(y)/abs(x)))
+    else:
+        theta = numpy.pi/2
+    if x <= 0 and y > 0:
+        theta += numpy.pi/2
+    elif x < 0 and y <= 0:
+        theta += numpy.pi
+    elif x >= 0 and y < 0:
+        theta += 3*numpy.pi/2
+
+    return r, theta
+
+def round_point_five(r, theta) -> tuple:
+    """round r to nearest 0.5 and theta to nearest int"""
+    r_string = str(r).split(".")
+    r_rounded = int(r_string[0])
+    r_one_dec_place = int(r_string[1][0])
+    if (r_one_dec_place > 3 and r_one_dec_place < 7):
+        r_rounded += 0.5
+    elif (r_one_dec_place >=7):
+        r_rounded += 1
+    return r_rounded, round(theta)
+
+def generate_polar_dictionary (cartesianImg) -> dict:
+    """convert cartesian cordinate to polar cordinate img"""
+    polar_img = dict()
+    max_x, max_y = len(cartesianImg[0])-1, len(cartesianImg)-1
+    center_x, center_y = max_x//2, max_y//2
+    
+    for y in range(max_y):
+        for x in range(max_x):
+            x_adjusted = x - center_x
+            y_adjusted = cented_y - y
+
+            # crop image(only circle)
+            if (x_adjusted**2 + y_adjusted**2 <= max_x**2/4):
+                r, theta = cartesian_to_polar(x_adjusted, y_adjusted)
+            else:
+                continue
+
+            # get pixel color data
+            if (x <= max_x//2 and y <= max_y//2-1) or (x >= max_x//2 and y > max_y//2):
+                pixel = cartesianImg[x][y]
+            else:
+                pixel = cartesianImg[y][x]
+            color = Color(pixel[2], pixel[1], pixel[0])
+
+            # make r round to nearest 0.5, and theta to the nearest int
+            r, theta = round_point_five(r, theta)
+
+            # add to the dictionary
+            polar_img[(r, theta)] = color
+
+    return polar_img
+
+
 if __name__ == '__main__':
     # Process arguments
     parser = argparse.ArgumentParser()
@@ -49,9 +107,8 @@ if __name__ == '__main__':
 
     try:
         while True:
-            meta = custom()
-            strip.setPixelColor(meta[0], meta[1])
-            strip.show()
+            #TODO: set color
+
     except KeyboardInterrupt:
         if not args.clear:
             colorWipe(strip, Color(0,0,0), 0)
