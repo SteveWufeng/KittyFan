@@ -51,6 +51,7 @@ if __name__ == '__main__':
         while True:
             meta = custom()
             strip.setPixelColor(meta[0], meta[1])
+            strip.show()
     except KeyboardInterrupt:
         if not args.clear:
             colorWipe(strip, Color(0,0,0), 0)
