@@ -20,6 +20,8 @@ def cartesian_to_polar(x, y) -> tuple:
         theta += PI                # add 180 if at quadrant 3
     elif x >= 0 and y < 0:
         theta += 3*PI/2            # add 270 if at quadrant 4
+    else:
+        print(f"leak!! {x}, {y}")
 
     return r, theta
 
@@ -57,7 +59,7 @@ def generate_polar_dictionary (cartesianImg) -> dict:
                 r, theta = cartesian_to_polar(x_adjusted, y_adjusted)
                 if (r < 72):
                     # get pixel color data
-                    if (x <= max_x//2 and y < max_y//2) or (x >= max_x//2 and y >= max_y//2):
+                    if (x <= center_x and y < center_y) or (x >= center_x and y >= center_y):
                         pixel = cartesianImg[x][y]
                     else:
                         pixel = cartesianImg[y][x]
@@ -77,13 +79,20 @@ def plot_image(img: list) -> None:
     point_size = 20
 
     polar_img = generate_polar_dictionary(img)
+    # for r in range(0, 72):
+    #     for deg in range(0, 361):
+    #         theta = math.radians(deg)
+    #         colors = polar_img[(r, deg)]
+    #         if (r < 72):
+    #             colors_ = polar_img[(r+0.5, deg)]
+    #         plt.scatter(theta, r, color=colors, s=point_size, cmap='hsv', alpha=0.75)
+    
     for key in polar_img:
         r, theta = key[0], key[1]
-        colors = polar_img[key]
-        # print(r, theta)
-        # input()
-        # plot the point
+        colors = polar_img[(r, theta)]
         plt.scatter(theta, r, color=colors, s=point_size, cmap='hsv', alpha=0.75)
+        
+    
     # show the plot
     plt.show()
         
