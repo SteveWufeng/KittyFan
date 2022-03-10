@@ -55,16 +55,7 @@ def round_theta(theta):
 
 def round_point_five(r) -> tuple:
     """round r to nearest 0.5"""
-    # round r
-    r_string = str(r).split(".")
-    r_rounded = int(r_string[0])
-    r_one_dec_place = int(r_string[1][0])
-    if (r_one_dec_place > 3 and r_one_dec_place < 7):
-        r_rounded += 0.5
-    elif (r_one_dec_place >=7):
-        r_rounded += 1
-        
-    return r_rounded
+    return round(r)
 
 def generate_polar_dictionary (cartesianImg) -> dict:
     """convert cartesian cordinate to polar cordinate img"""
@@ -119,12 +110,11 @@ if __name__ == '__main__':
             for deg in range (0, 361):
                 theta = math.radians(deg)
                 for r in range (0, LED_COUNT):
-                    r2 = r+0.5
                     theta2 = round_theta(theta+math.pi % (2*math.pi))
                     if (r, theta) in polar_img:
                         strip.setPixelColor(r, polar_img[r, theta])
-                    if (r2, theta2) in polar_img:
-                        strip2.setPixelColor(r, polar_img[r2, theta2])
+                    if (r, theta2) in polar_img:
+                        strip2.setPixelColor(r, polar_img[r, theta2])
                 strip.show()
                 strip2.show()
         
