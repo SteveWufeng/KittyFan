@@ -1,8 +1,6 @@
 import time
-from polar_simulation import read_image
 from rpi_ws281x import *
 import argparse
-import random
 import cv2
 import math
 import numpy
@@ -47,8 +45,17 @@ def cartesian_to_polar(x, y) -> tuple:
 
     return r, theta
 
-def round_point_five(r, theta) -> tuple:
-    """round r to nearest 0.5 and theta to nearest int"""
+def round_theta(theta):
+    """and theta to nearest int"""
+    # round theta
+    degree = math.degrees(theta)
+    degree = round(degree) # round to nearest degree
+    theta = math.radians(degree)
+    return theta
+
+def round_point_five(r) -> tuple:
+    """round r to nearest 0.5"""
+    # round r
     r_string = str(r).split(".")
     r_rounded = int(r_string[0])
     r_one_dec_place = int(r_string[1][0])
@@ -56,7 +63,8 @@ def round_point_five(r, theta) -> tuple:
         r_rounded += 0.5
     elif (r_one_dec_place >=7):
         r_rounded += 1
-    return r_rounded, round(theta)
+        
+    return r_rounded
 
 def generate_polar_dictionary (cartesianImg) -> dict:
     """convert cartesian cordinate to polar cordinate img"""
@@ -77,9 +85,11 @@ def generate_polar_dictionary (cartesianImg) -> dict:
                 else:
                     pixel = cartesianImg[y][x]
                 color = Color(pixel[2], pixel[1], pixel[0])
+                print(pixel[2], pixel[1], pixel[0])
+                input()
 
                 # make r round to nearest 0.5, and theta to the nearest int
-                r, theta = round_point_five(r, theta)
+                r, theta = round_point_five(r), round_theta(theta)
 
                 # add to the dictionary
                 polar_img[(r, theta)] = color
@@ -106,17 +116,18 @@ if __name__ == '__main__':
 
     try:
         img_file = 'images/color_test_pattern.jpg'
-        img = read_image(img_file)
+        img = read_img_file(img_file)
         polar_img = generate_polar_dictionary(img)
-        for deg in range (0, 181):
-            for r in range (0, LED_COUNT):
-                theta = math.radians(deg)
-                if (r, theta) in polar_img:
-                    strip.setPixelColor(r, polar_img[r, theta])
-                if (r+0.5, theta+math.pi) in polar_img:
-                    strip2.setPixelColor(r, polar_img[r+0.5,theta+math.pi])
-                strip.show()
-                strip2.show()
+        while True:
+            for deg in range (0, 181):
+                for r in range (0, LED_COUNT):
+                    theta = math.radians(deg)
+                    if (r, theta) in polar_img:
+                        strip.setPixelColor(r, polar_img[r, theta])
+                    if (r+0.5, round_theta(theta+math.pi % (2*math.pi))) in polar_img:
+                        strip2.setPixelColor(r, polar_img[r+0.5,theta+math.pi])
+                    strip.show()
+                    strip2.show()
         
     except KeyboardInterrupt:
         if not args.clear:

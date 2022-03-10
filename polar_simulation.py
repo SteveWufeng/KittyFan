@@ -77,15 +77,16 @@ def plot_image(img: list) -> None:
     point_size = 20
 
     polar_img = generate_polar_dictionary(img)
-    for r in range(0, 30):
-        for deg in range(0, 361):
+    for deg in range(0, 361):
+        for r in range(0, 36):
             theta = math.radians(deg)
             if ((r, theta) in polar_img):
                 colors = polar_img[(r, theta)]
-                if (r < 30 and ((r+0.5, theta) in polar_img)):
-                    colors_ = polar_img[(r+0.5, theta)]
-                    plt.scatter(theta, r+0.5, color=colors, s=point_size, cmap='hsv', alpha=0.75)
                 plt.scatter(theta, r, color=colors, s=point_size, cmap='hsv', alpha=0.75)
+                if (r < 36 and ((r+0.5, theta+math.pi % (2*math.pi)) in polar_img)):
+                    colors_ = polar_img[(r+0.5, theta+math.pi % (2*math.pi))]
+                    plt.scatter(theta, r+0.5, color=colors_, s=point_size, cmap='hsv', alpha=0.75)
+                
     
     # for key in polar_img:
     #     r, theta = key[0], key[1]
