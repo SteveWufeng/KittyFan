@@ -43,15 +43,12 @@ def cartesian_to_polar(x, y) -> tuple:
     elif x >= 0 and y < 0:
         theta += 3*numpy.pi/2
 
-    return r, theta
+    return r, math.degrees(theta)
 
-def round_theta(theta):
+def round_theta(deg):
     """and theta to nearest int"""
     # round theta
-    degree = math.degrees(theta)
-    degree = round(degree) # round to nearest degree
-    theta = math.radians(degree)
-    return theta
+    return round(deg)
 
 def round_point_five(r) -> tuple:
     """round r to nearest 0.5"""
@@ -70,17 +67,17 @@ def generate_polar_dictionary (cartesianImg) -> dict:
 
             # crop image(only circle)
             if (x_adjusted**2 + y_adjusted**2 <= max_x**2/4):
-                r, theta = cartesian_to_polar(x_adjusted, y_adjusted)
+                r, deg = cartesian_to_polar(x_adjusted, y_adjusted)
                 if (x <= max_x//2 and y <= max_y//2-1) or (x >= max_x//2 and y > max_y//2):
                     pixel = cartesianImg[x][y]
                 else:
                     pixel = cartesianImg[y][x]
                 color = Color(int(pixel[2]), int(pixel[1]), int(pixel[0]))
-                # make r round to nearest 0.5, and theta to the nearest int
-                r, theta = round_point_five(r), round_theta(theta)
+                # make r round to nearest 0.5, and degree to the nearest int
+                r, deg = round_point_five(r), round_theta(deg)
 
                 # add to the dictionary
-                polar_img[(r, theta)] = color
+                polar_img[(r, deg)] = color
 
     return polar_img
 
@@ -108,13 +105,14 @@ if __name__ == '__main__':
         polar_img = generate_polar_dictionary(img)
         while True:
             for deg in range (0, 361):
-                theta = math.radians(deg)
                 for r in range (0, LED_COUNT):
-                    theta2 = round_theta(theta+math.pi % (2*math.pi))
-                    if (r, theta) in polar_img:
-                        strip.setPixelColor(r, polar_img[r, theta])
-                    if (r, theta2) in polar_img:
-                        strip2.setPixelColor(r, polar_img[r, theta2])
+                    deg2 = round_theta(deg+180)
+                    if (deg2 > 360):
+                        deg2 -= 360
+                    if (r, deg) in polar_img:
+                        strip.setPixelColor(r, polar_img[r, deg])
+                    if (r, deg2) in polar_img:
+                        strip2.setPixelColor(r, polar_img[r, deg2])
                 strip.show()
                 strip2.show()
         
