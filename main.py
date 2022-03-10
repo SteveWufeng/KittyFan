@@ -1,4 +1,5 @@
 import time
+from polar_simulation import read_image
 from rpi_ws281x import *
 import argparse
 import random
@@ -104,9 +105,20 @@ if __name__ == '__main__':
         print('Use "-c" argument to clear LEDs on exit')
 
     try:
-        while True:
-            #TODO: set color
-            print("placeholder")
+        img_file = 'images/color_test_pattern.jpg'
+        img = read_image(img_file)
+        polar_img = generate_polar_dictionary(img)
+        for deg in range (0, 181):
+            for r in range (0, LED_COUNT):
+                theta = math.radians(deg)
+                if (r, theta) in polar_img:
+                    strip.setPixelColor(r, polar_img[r, theta])
+                if (r+0.5, theta+math.pi) in polar_img:
+                    strip2.setPixelColor(r, polar_img[r+0.5,theta+math.pi])
+                strip.show()
+                strip2.show()
+        
     except KeyboardInterrupt:
         if not args.clear:
             color_wipe(strip, Color(0,0,0), 0)
+            color_wipe(strip2, Color(0,0,0), 0)
