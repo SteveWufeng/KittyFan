@@ -84,10 +84,7 @@ def generate_polar_dictionary (cartesianImg) -> dict:
                     pixel = cartesianImg[x][y]
                 else:
                     pixel = cartesianImg[y][x]
-                color = Color(pixel[2], pixel[1], pixel[0])
-                print(pixel[2], pixel[1], pixel[0])
-                input()
-
+                color = Color(int(pixel[2]), int(pixel[1]), int(pixel[0]))
                 # make r round to nearest 0.5, and theta to the nearest int
                 r, theta = round_point_five(r), round_theta(theta)
 
@@ -115,19 +112,21 @@ if __name__ == '__main__':
         print('Use "-c" argument to clear LEDs on exit')
 
     try:
-        img_file = 'images/color_test_pattern.jpg'
+        img_file = 'images/line.jpg'
         img = read_img_file(img_file)
         polar_img = generate_polar_dictionary(img)
         while True:
-            for deg in range (0, 181):
+            for deg in range (0, 361):
+                theta = math.radians(deg)
                 for r in range (0, LED_COUNT):
-                    theta = math.radians(deg)
+                    r2 = r+0.5
+                    theta2 = round_theta(theta+math.pi % (2*math.pi))
                     if (r, theta) in polar_img:
                         strip.setPixelColor(r, polar_img[r, theta])
-                    if (r+0.5, round_theta(theta+math.pi % (2*math.pi))) in polar_img:
-                        strip2.setPixelColor(r, polar_img[r+0.5,theta+math.pi])
-                    strip.show()
-                    strip2.show()
+                    if (r2, theta2) in polar_img:
+                        strip2.setPixelColor(r, polar_img[r2, theta2])
+                strip.show()
+                strip2.show()
         
     except KeyboardInterrupt:
         if not args.clear:
