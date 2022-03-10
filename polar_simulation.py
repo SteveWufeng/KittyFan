@@ -23,62 +23,75 @@ def cartesian_to_polar(x, y) -> tuple:
 
     return r, theta
 
-def plot_image(img: list) -> None:
-    # this will keep track of the LEDs occupied on the strip
-    plotted = set()
-    # initialize plot
-    plt.axes(projection='polar')
-    point_size = 20
+def round_point_five(r, theta) -> tuple:
+    """round r to nearest 0.5 and theta to nearest int"""
+    # round r
+    r_string = str(r).split(".")
+    r_rounded = int(r_string[0])
+    r_one_dec_place = int(r_string[1][0])
+    if (r_one_dec_place > 3 and r_one_dec_place < 7):
+        r_rounded += 0.5
+    elif (r_one_dec_place >=7):
+        r_rounded += 1
+        
+    # round theta
+    degree = math.degrees(theta)
+    degree = round(degree) # round to nearest degree
+    theta = math.radians(degree)
+    
+    return r_rounded, theta
 
-    # plotting plots
-    # calculate (x, y) cord to (r, theta) cord.
-    max_x, max_y = len(img[0])-1, len(img)-1
+def generate_polar_dictionary (cartesianImg) -> dict:
+    """convert cartesian cordinate to polar cordinate img"""
+    polar_img = dict()
+    max_x, max_y = len(cartesianImg[0])-1, len(cartesianImg)-1
     center_x, center_y = max_x//2, max_y//2
-
-    for y in range(max_y):     # y -> [0, 1, 2, 3 ..., max_y-1]
-        for x in range(max_x): # x -> [0, 1, 2, 3 ..., max_x-1]
-            # adjust cordinate center to the image center
-            x_adjusted = x- center_x
+    
+    for y in range(max_y):
+        for x in range(max_x):
+            x_adjusted = x - center_x
             y_adjusted = center_y - y
-            
-            # crop the image using col**2 + row**2 <= size**2/4:
+
+            # crop image(only circle)
             if (x_adjusted**2 + y_adjusted**2 <= max_x**2/4):
                 r, theta = cartesian_to_polar(x_adjusted, y_adjusted)
             else:
                 continue
 
-            # because in an LED strip, we dont have r = 0.5 or other decimals. we only have int.
-            r = int(r) 
-            if r % 2 != 0:
-                r -=1
-            plotting = True
-            while (plotting):
-                if ((r, theta) not in plotted):
-                    plotted.add((r,theta))
-                    plotting = False
-                else:
-                    r += 2
-                    if r > 30:
-                        r = None
-                        break
-            if r == None:
-                continue
-
-            # get pixel data
+            # get pixel color data
             if (x <= max_x//2 and y <= max_y//2-1) or (x >= max_x//2 and y > max_y//2):
-                pixel = img[x][y]
+                pixel = cartesianImg[x][y]
             else:
-                pixel = img[y][x]
-            blue, green, red = pixel[0]/255, pixel[1]/255, pixel[2]/255
-            colors = [red, green, blue]
+                pixel = cartesianImg[y][x]
+            color = (pixel[2]/255, pixel[1]/255, pixel[0]/255)
 
-            # plot the point
-            plt.scatter(theta, r, color=colors, s=point_size, cmap='hsv', alpha=0.75)
-    
+            # make r round to nearest 0.5, and theta to the nearest int
+            r, theta = round_point_five(r, theta)
+
+            # add to the dictionary
+            polar_img[(r, theta)] = color
+
+    return polar_img
+
+def plot_image(img: list) -> None:
+    # initialize plot
+    plt.axes(projection='polar')
+    point_size = 20
+
+    polar_img = generate_polar_dictionary(img)
+    for key in polar_img:
+        r, theta = key[0], key[1]
+        colors = polar_img[key]
+        # print(r, theta)
+        # input()
+        # plot the point
+        plt.scatter(theta, r, color=colors, s=point_size, cmap='hsv', alpha=0.75)
     # show the plot
     plt.show()
-
+        
 def main():
+    # while True:
+        # print(round_point_five(float(input("enter num: "))))
     img_file = 'images/R_small.png'
     img = read_image(img_file)
     plot_image(img)
