@@ -1,0 +1,15 @@
+Summary(3/10/2021):
+Major Project update :sleeping:
+github: https://github.com/SteveWufeng/KittyFan
+What have I done (very long...):
+-modified spinning arm model (each part of the 3D printed arms now have physical joints to each other!)
+-soldered some stuff around for LED circuit
+-find, modify, and test power supply for Motor and LED strip
+-designed slipring for the project
+-3D modeled a holder for the motor & printed them out
+-wrote bugs for the program and fixed tons of bugs
+Next step:
+-wait for slipring and carbon brush to deliver
+-assemble all parts together
+
+Report(3/10/2021): I had challenge with splitting r between whole numbers and 0.5, I noticed that this method would not work because the two group are not split evenly. it is inefficient to have one group less than another. If one group has less data than the other group, one of my LED strip will function less while the other one will do all the work.
