@@ -20,8 +20,9 @@ def cartesian_to_polar(x, y) -> tuple:
         theta += PI                # add 180 if at quadrant 3
     elif x >= 0 and y < 0:
         theta += 3*PI/2            # add 270 if at quadrant 4
-    else:
-        print(f"leak!! {x}, {y}")
+
+    # make r round to nearest 0.5, and theta to the nearest int
+    r, theta = round_point_five(r, theta)
 
     return r, theta
 
@@ -57,16 +58,13 @@ def generate_polar_dictionary (cartesianImg) -> dict:
             # crop image(only circle)
             if (x_adjusted**2 + y_adjusted**2 <= max_x**2/4):
                 r, theta = cartesian_to_polar(x_adjusted, y_adjusted)
-                if (r < 72):
+                if (r < 72 and ((r, theta) not in polar_img)):
                     # get pixel color data
                     if (x <= center_x and y < center_y) or (x >= center_x and y >= center_y):
                         pixel = cartesianImg[x][y]
                     else:
                         pixel = cartesianImg[y][x]
                     color = (pixel[2]/255, pixel[1]/255, pixel[0]/255)
-
-                    # make r round to nearest 0.5, and theta to the nearest int
-                    r, theta = round_point_five(r, theta)
 
                     # add to the dictionary
                     polar_img[(r, theta)] = color
@@ -79,18 +77,20 @@ def plot_image(img: list) -> None:
     point_size = 20
 
     polar_img = generate_polar_dictionary(img)
-    # for r in range(0, 72):
-    #     for deg in range(0, 361):
-    #         theta = math.radians(deg)
-    #         colors = polar_img[(r, deg)]
-    #         if (r < 72):
-    #             colors_ = polar_img[(r+0.5, deg)]
-    #         plt.scatter(theta, r, color=colors, s=point_size, cmap='hsv', alpha=0.75)
+    for r in range(0, 30):
+        for deg in range(0, 361):
+            theta = math.radians(deg)
+            if ((r, theta) in polar_img):
+                colors = polar_img[(r, theta)]
+                if (r < 30 and ((r+0.5, theta) in polar_img)):
+                    colors_ = polar_img[(r+0.5, theta)]
+                    plt.scatter(theta, r+0.5, color=colors, s=point_size, cmap='hsv', alpha=0.75)
+                plt.scatter(theta, r, color=colors, s=point_size, cmap='hsv', alpha=0.75)
     
-    for key in polar_img:
-        r, theta = key[0], key[1]
-        colors = polar_img[(r, theta)]
-        plt.scatter(theta, r, color=colors, s=point_size, cmap='hsv', alpha=0.75)
+    # for key in polar_img:
+    #     r, theta = key[0], key[1]
+    #     colors = polar_img[(r, theta)]
+    #     plt.scatter(theta, r, color=colors, s=point_size, cmap='hsv', alpha=0.75)
         
     
     # show the plot
