@@ -7,7 +7,7 @@ import math
 import numpy
 
 # LED strip configuration:
-LED_COUNT      = 144      # Number of LED pixels.
+LED_COUNT      = 72      # Number of LED pixels.
 LED_PIN        = 18      # GPIO pin connected to the pixels (18 uses PWM!).
 #LED_PIN        = 10      # GPIO pin connected to the pixels (10 uses SPI /dev/spidev0.0).
 LED_FREQ_HZ    = 800000  # LED signal frequency in hertz (usually 800khz)
@@ -71,21 +71,17 @@ def generate_polar_dictionary (cartesianImg) -> dict:
             # crop image(only circle)
             if (x_adjusted**2 + y_adjusted**2 <= max_x**2/4):
                 r, theta = cartesian_to_polar(x_adjusted, y_adjusted)
-            else:
-                continue
+                if (x <= max_x//2 and y <= max_y//2-1) or (x >= max_x//2 and y > max_y//2):
+                    pixel = cartesianImg[x][y]
+                else:
+                    pixel = cartesianImg[y][x]
+                color = Color(pixel[2], pixel[1], pixel[0])
 
-            # get pixel color data
-            if (x <= max_x//2 and y <= max_y//2-1) or (x >= max_x//2 and y > max_y//2):
-                pixel = cartesianImg[x][y]
-            else:
-                pixel = cartesianImg[y][x]
-            color = Color(pixel[2], pixel[1], pixel[0])
+                # make r round to nearest 0.5, and theta to the nearest int
+                r, theta = round_point_five(r, theta)
 
-            # make r round to nearest 0.5, and theta to the nearest int
-            r, theta = round_point_five(r, theta)
-
-            # add to the dictionary
-            polar_img[(r, theta)] = color
+                # add to the dictionary
+                polar_img[(r, theta)] = color
 
     return polar_img
 
@@ -98,8 +94,10 @@ if __name__ == '__main__':
 
     # Create NeoPixel object with appropriate configuration.
     strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
+    strip2 = Adafruit_NeoPixel(LED_COUNT, 13, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, 1)
     # Intialize the library (must be called once before other functions).
     strip.begin()
+    strip2.begin()
 
     print ('Press Ctrl-C to quit.')
     if not args.clear:
@@ -111,4 +109,4 @@ if __name__ == '__main__':
             print("placeholder")
     except KeyboardInterrupt:
         if not args.clear:
-            colorWipe(strip, Color(0,0,0), 0)
+            color_wipe(strip, Color(0,0,0), 0)
