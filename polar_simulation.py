@@ -55,21 +55,19 @@ def generate_polar_dictionary (cartesianImg) -> dict:
             # crop image(only circle)
             if (x_adjusted**2 + y_adjusted**2 <= max_x**2/4):
                 r, theta = cartesian_to_polar(x_adjusted, y_adjusted)
-            else:
-                continue
+                if (r < 72):
+                    # get pixel color data
+                    if (x <= max_x//2 and y < max_y//2) or (x >= max_x//2 and y >= max_y//2):
+                        pixel = cartesianImg[x][y]
+                    else:
+                        pixel = cartesianImg[y][x]
+                    color = (pixel[2]/255, pixel[1]/255, pixel[0]/255)
 
-            # get pixel color data
-            if (x <= max_x//2 and y <= max_y//2-1) or (x >= max_x//2 and y > max_y//2):
-                pixel = cartesianImg[x][y]
-            else:
-                pixel = cartesianImg[y][x]
-            color = (pixel[2]/255, pixel[1]/255, pixel[0]/255)
+                    # make r round to nearest 0.5, and theta to the nearest int
+                    r, theta = round_point_five(r, theta)
 
-            # make r round to nearest 0.5, and theta to the nearest int
-            r, theta = round_point_five(r, theta)
-
-            # add to the dictionary
-            polar_img[(r, theta)] = color
+                    # add to the dictionary
+                    polar_img[(r, theta)] = color
 
     return polar_img
 
@@ -92,7 +90,7 @@ def plot_image(img: list) -> None:
 def main():
     # while True:
         # print(round_point_five(float(input("enter num: "))))
-    img_file = 'images/R_small.png'
+    img_file = 'images/color_test_pattern.jpg'
     img = read_image(img_file)
     plot_image(img)
 

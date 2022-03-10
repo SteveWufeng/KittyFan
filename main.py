@@ -66,7 +66,7 @@ def generate_polar_dictionary (cartesianImg) -> dict:
     for y in range(max_y):
         for x in range(max_x):
             x_adjusted = x - center_x
-            y_adjusted = cented_y - y
+            y_adjusted = center_y - y
 
             # crop image(only circle)
             if (x_adjusted**2 + y_adjusted**2 <= max_x**2/4):
@@ -108,7 +108,7 @@ if __name__ == '__main__':
     try:
         while True:
             #TODO: set color
-
+            print("placeholder")
     except KeyboardInterrupt:
         if not args.clear:
             colorWipe(strip, Color(0,0,0), 0)
