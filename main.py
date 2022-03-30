@@ -17,20 +17,34 @@ LED_INVERT     = False   # True to invert the signal (when using NPN transistor 
 LED_CHANNEL    = 0       # set to '1' for GPIOs 13, 19, 41, 45 or 53
 
 # Define functions which animate LEDs in various ways.
-def color_wipe(strip, color, wait_ms=50):
-    """Wipe color across display a pixel at a time."""
+def color_wipe(strip, color, wait_ms=50) -> None:
+    """
+    Wipe color across display a pixel at a time.
+    @param strip Adafruit_NeoPixel instance of an led strip
+    @param color color to wipe out the led stip
+    @param wait_ms delay for updating each led pixel
+    """
     for i in range(strip.numPixels()):
         strip.setPixelColor(i, color)
         strip.show()
         time.sleep(wait_ms/1000.0)
 
 def read_img_file(filename) -> list:
-    """read image file and return a matrix of img data"""
+    """
+    read image file and return a matrix of img data
+    @param file name of the image
+    @return a 3D list of the image list[row][col][R, G, B]
+    """
     img = cv2.imread(filename)
     return img
 
 def cartesian_to_polar(x, y) -> tuple:
-    """convert cartesian cortinate to polar cordinate"""
+    """
+    convert cartesian cortinate to polar cordinate
+    @param x x cordinate of the cartesian
+    @param y y cordinate of the cartesian
+    @return radius, degree
+    """
     r = math.sqrt((x**2) + (y**2))
     if x != 0:
         theta = numpy.arctan((abs(y)/abs(x)))
@@ -46,16 +60,28 @@ def cartesian_to_polar(x, y) -> tuple:
     return r, math.degrees(theta)
 
 def round_theta(deg):
-    """and theta to nearest int"""
+    """
+    round theta to nearest int
+    @param original degree with decimal
+    @return rounded degree
+    """
     # round theta
     return round(deg)
 
 def round_point_five(r) -> tuple:
-    """round r to nearest 0.5"""
+    """
+    round radius to nearest 0.5
+    @param r radius
+    @return rounded r to nearest 0.5
+    """
     return round(r)
 
 def generate_polar_dictionary (cartesianImg) -> dict:
-    """convert cartesian cordinate to polar cordinate img"""
+    """
+    convert cartesian cordinate to polar cordinate img
+    @param cartesianImg cartesian list of the image
+    @return dict dicionary of {(r, deg) : color}
+    """
     polar_img = dict()
     max_x, max_y = len(cartesianImg[0])-1, len(cartesianImg)-1
     center_x, center_y = max_x//2, max_y//2
