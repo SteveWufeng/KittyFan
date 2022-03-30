@@ -5,6 +5,11 @@ import matplotlib.pyplot as plt
 PI = np.pi
 
 def read_image(img_file: str) -> list:
+    """
+    read image file and return a matrix of img data
+    @param file name of the image
+    @return a 3D list of the image list[row][col][R, G, B]
+    """
     img = cv2.imread(img_file)
     return img
 
@@ -33,7 +38,9 @@ def round_point_five(r) -> int:
     return round (r)
 
 def generate_polar_dictionary (cartesianImg) -> dict:
-    """convert cartesian cordinate to polar cordinate img"""
+    """
+    convert cartesian cordinate to polar cordinate img
+    """
     polar_img = dict()
     max_x, max_y = len(cartesianImg[0])-1, len(cartesianImg)-1
     center_x, center_y = max_x//2, max_y//2
@@ -62,12 +69,16 @@ def generate_polar_dictionary (cartesianImg) -> dict:
     return polar_img
 
 def plot_image(img: list) -> None:
+    """
+    plot the image using the inputed image list
+    @param img the list of data to be transformed to polar dictionary
+    """
     # initialize plot
     plt.axes(projection='polar')
     point_size = 20
 
     polar_img = generate_polar_dictionary(img)
-    for deg in range (0, 361):
+    for deg in range (0, 361, 2):
         for r in range (0, 36):
             if ((r, deg) in polar_img):
                 colors = polar_img[(r, deg)]
