@@ -104,7 +104,7 @@ if __name__ == '__main__':
         img = read_img_file(img_file)
         polar_img = generate_polar_dictionary(img)
         while True:
-            for deg in range (0, 361):
+            for deg in range (0, 361,3):
                 for r in range (0, LED_COUNT):
                     deg2 = round_theta(deg+180)
                     if (deg2 > 360):

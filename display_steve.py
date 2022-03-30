@@ -48,14 +48,25 @@ V = [
     [0, 0, 1, 0, 0, 0]
 ]
 def colorWipe(strip, color, wait_ms=50):
-    """Wipe color across display a pixel at a time."""
+    """
+    Wipe color across display a pixel at a time.
+    @param strip Adafruit_NeoPixel instance of an led strip
+    @param color color to wipe out the led stip
+    @param wait_ms delay for updating each led pixel
+    """
     for i in range(strip.numPixels()):
         strip.setPixelColor(i, color)
         strip.show()
         time.sleep(wait_ms/1000.0)
 
 def display_row(strip, a_list, on_color, off_color):
-    """input a 1D list, and display on the LED strip"""
+    """
+    input a 1D list, and display on the LED strip
+    @param Adafruit_NeoPixel instance of an led strip
+    @param a_list a list of status of leds 1 = ON, 0 = OFF.
+    @param on_color the color for a turned on status LED.
+    @param off_color the color for a turned off status LED.
+    """
     colored = []
     for i in a_list:
         if i == 1:
@@ -69,7 +80,11 @@ def display_row(strip, a_list, on_color, off_color):
     strip.show()
 
 def display_steve(strip, wait_ms=0.1):
-    """display steve on the LED strip"""
+    """
+    display steve on the LED strip
+    @param strip LED strip to display on
+    @param wait_ms time delay for each frame.
+    """
     for i in range(5):
         row = []
         for letter in [S, T, E, V, E]:
@@ -78,14 +93,23 @@ def display_steve(strip, wait_ms=0.1):
     time.sleep(wait_ms/1000.0)
 
 def random_index_color():
-    """helper function to randomize a tuple of color"""
+    """
+    helper function to randomize a tuple of color
+    @return a random index 0 to 5 with static RGB
+    """
     r = 255
     g = 0
     b = 0
     return random.randint(0,5), r, g, b
 
 def custom():
-    """Learning how to use this library"""
+    """
+    Learning how to use this library...
+    helper functions that read inputs
+    read an index from input
+    and read rgb from input
+    @return index and RGB
+    """
     led_index = int(input('led index #: '))
     r, g, b = 0, 0, 0
     color = input('Enter R G B: ')
