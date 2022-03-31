@@ -1,0 +1,7 @@
+rpi-ws281x == 4.3.3
+numpy == 1.22.3
+opencv-python == 4.5.5.64
+argparse == 1.4.0
+
+# optional lib for simulation
+# matplotlib == 3.5.1
